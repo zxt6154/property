@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuStationMapper">
+
+    <sql id="Base_Column_List">
+        id, type, station_no, station_name, create_time, moditiy_time
+    </sql>
+
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuStation">
+        insert into suzaku_station(type, city, manager, station_no, station_name, address)
+        values
+        <foreach collection="stationList" item="item" separator=",">
+            (
+            #{item.type}, #{item.city},#{item.manager}, #{item.stationNo},#{item.stationName},#{item.address}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="getStationByType" resultType="com.ziroom.suzaku.main.entity.SuzakuStation">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_station where 1=1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+    </select>
+    <select id="getStationById" resultType="com.ziroom.suzaku.main.entity.SuzakuStation">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_station where 1=1
+        <if test="id != null">
+            and id = #{id}
+        </if>
+    </select>
+
+</mapper>

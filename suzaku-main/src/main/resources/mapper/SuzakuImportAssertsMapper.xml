@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuImportAssertsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuImportAsserts">
+        <id column="id" property="id" />
+        <result column="import_bill_num" property="importBillNum" />
+        <result column="asserts_code" property="assertsCode" />
+        <result column="old_asserts_code" property="oldAssertsCode" />
+        <result column="sku" property="sku" />
+        <result column="sku_name" property="skuName" />
+        <result column="category_id" property="categoryId" />
+        <result column="category" property="category" />
+        <result column="brand_name" property="brandName" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="attribute_str" property="attributeStr" />
+        <result column="sku_type" property="skuType" />
+        <result column="sn_code" property="snCode" />
+        <result column="mac_imic" property="macImic" />
+        <result column="purchase_price" property="purchasePrice" />
+        <result column="purchase_date" property="purchaseDate" />
+        <result column="maintain_overdue" property="maintainOverdue" />
+        <result column="success_flag" property="successFlag" />
+        <result column="assets_state" property="assetsState" />
+        <result column="group_id" property="groupId" />
+        <result column="use_people" property="usePeople" />
+        <result column="use_department" property="useDepartment" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="operator" property="operator" />
+        <result column="station_name" property="stationName" />
+        <result column="station_no" property="stationNo" />
+        <association property="skuEntity" column="sku" javaType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity" select="com.ziroom.suzaku.main.dao.SuzakuSkuMapper.getSuzakuSkuEntityBySkuId" > <!-- 用接口里定义的方法，根据skuEntity表中的sku_id字段查出对应数据  -->
+            <id column="sku_id" property="skuId" />
+        </association>
+    </resultMap>
+<!--    -->
+    <sql id="sql_piece">
+        <if test="reqParam.assertStatus != null and reqParam.assertStatus.size()>0">
+            and asserts.assets_state IN
+            <foreach item="item" index="index" collection="reqParam.assertStatus" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.assertsCodes != null and reqParam.assertsCodes.size()>0">
+            AND asserts.asserts_code IN
+            <foreach item="item" index="index" collection="reqParam.assertsCodes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.importBillNums != null and reqParam.importBillNums.size()>0">
+            AND asserts.import_bill_num IN
+            <foreach item="item" index="index" collection="reqParam.importBillNums" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.skuIds != null and reqParam.skuIds.size()>0">
+            AND asserts.sku IN
+            <foreach item="item" index="index" collection="reqParam.skuIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.categoryId != null and reqParam.categoryId != ''">
+            and asserts.category_id = #{reqParam.categoryId}
+        </if>
+        <if test="reqParam.assertStatu != null and reqParam.assertStatu != ''">
+            and asserts.assets_state = #{reqParam.assertStatu}
+        </if>
+        <if test="reqParam.assertsCode != null and reqParam.assertsCode != ''">
+            and asserts.asserts_code = #{reqParam.assertsCode}
+        </if>
+        <if test="reqParam.stationId != null and reqParam.stationId != ''">
+            and asserts.station_no = #{reqParam.stationId}
+        </if>
+<!--        <if test="reqParam.departName != null and reqParam.departName != ''">-->
+<!--            and use_department = #{reqParam.departName}-->
+<!--        </if>-->
+        <if test="reqParam.departNames != null and reqParam.departNames.size()>0">
+            and asserts.use_department IN
+            <foreach item="item" index="index" collection="reqParam.departNames" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <resultMap type="com.ziroom.suzaku.main.model.po.SuzakuImportAssertsPo" id="assertsPo">
+        <result property="id" column="id"/>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, import_bill_num, asserts_code, old_asserts_code, sku, sku_name, category_id, category, brand_name, supplier_name, attribute_str, sku_type, sn_code, mac_imic,
+        purchase_price, purchase_date, maintain_overdue, success_flag, assets_state, group_id, use_people, use_department, create_time, update_time,operator,station_no,station_name
+    </sql>
+
+    <sql id="associate_sql_piece">
+            asserts.id,asserts.import_bill_num,asserts.asserts_code,asserts.old_asserts_code,asserts.sku,asserts.sku_name, asserts.category_id ,asserts.category,asserts.brand_name ,asserts.supplier_name ,asserts.attribute_str ,asserts.sku_type
+            ,asserts.sn_code,asserts.mac_imic,asserts.purchase_price,asserts.purchase_date,asserts.maintain_overdue,asserts.success_flag,asserts.assets_state,asserts.group_id, asserts.use_people,asserts.use_department
+            ,asserts.create_time,asserts.update_time,asserts.operator,asserts.station_no ,asserts.station_name ,asserts.manage_type ,sku.id sku_id,sku.sku_name,sku.sku_desc,sku.category_id,sku.category_tree
+            ,sku.category_name ,sku.brand_id ,sku.brand_name,sku.supplier_id ,sku.supplier_name,sku.sku_type ,sku.unit,sku.period ,sku.threshold,sku.attribute_desc,sku.create_time, sku.moditiy_time, sku.operator_name
+            </sql>
+<!--    , suzaku_sku sku     and asserts.sku = sku.sku_id   多表查询-->
+    <select id="assoSearch" parameterType="com.ziroom.suzaku.main.model.qo.AssertsSkuQo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_asserts asserts
+        where 1=1
+        <include refid="sql_piece"/>
+        order by asserts.update_time desc
+        <if test="reqParam.index != null">
+            limit #{reqParam.index}, #{reqParam.pageSize}
+        </if>
+    </select>
+
+    <select id="assoSearchTotal" parameterType="com.ziroom.suzaku.main.model.qo.AssertsSkuQo" resultType="int">
+        SELECT  count(1)
+        from suzaku_import_asserts asserts
+        where 1=1
+        <include refid="sql_piece"/>
+    </select>
+    <select id="searchAsso" parameterType="com.ziroom.suzaku.main.model.qo.AssertsSkuQo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_asserts asserts
+        where asserts.assets_state = 1
+        <include refid="sql_piece"/>
+        order by asserts.update_time desc
+    </select>
+
+    <select id="total" parameterType="com.ziroom.suzaku.main.param.AssertSelectReqParam" resultType="int">
+        SELECT count(1)
+        from suzaku_import_asserts where 1 = 1
+        <if test="reqParam.assertStatus != null">
+            and assets_state = #{reqParam.assertStatus}
+        </if>
+        <if test="reqParam.notInAssertsStateList != null and reqParam.notInAssertsStateList != '' and reqParam.notInAssertsStateList.size()>0">
+            AND assets_state NOT IN
+            <foreach item="item" index="index" collection="reqParam.notInAssertsStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.exceptExsit != null and reqParam.exceptExsit != '' and reqParam.exceptExsit.size()>0">
+            AND asserts_code NOT IN
+            <foreach item="item" index="index" collection="reqParam.exceptExsit" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.assertsStateList != null and reqParam.assertsStateList.size()>0">
+            AND assets_state IN
+            <foreach item="item" index="index" collection="reqParam.assertsStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.assertsCodes != null and reqParam.assertsCodes.size()>0">
+            AND asserts_code IN
+            <foreach item="item" index="index" collection="reqParam.assertsCodes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.skuIds != null and reqParam.skuIds.size()>0">
+            AND sku IN
+            <foreach item="item" index="index" collection="reqParam.skuIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.importBills != null and reqParam.importBills.size > 0">
+            AND import_bill_num in <foreach collection="reqParam.importBills" item="importBillNum" index="index" open="(" close=")" separator=","> #{importBillNum} </foreach>
+        </if>
+        <if test="reqParam.category != null and reqParam.category !=''">
+            and category_id = #{reqParam.category}
+        </if>
+        <if test="reqParam.brandName != null and reqParam.brandName!=''">
+            and brand_name = #{reqParam.brandName}
+        </if>
+        <if test="reqParam.stationName != null and reqParam.stationName!=''">
+            and station_name = #{reqParam.stationName}
+        </if>
+        <if test="reqParam.supplierName != null and reqParam.supplierName!=''">
+            and supplier_name = #{reqParam.supplierName}
+        </if>
+        <if test="reqParam.assertsCode != null and reqParam.assertsCode != ''">
+            and asserts_code = #{reqParam.assertsCode}
+        </if>
+        <if test="reqParam.skuName != null and reqParam.skuName != ''">
+            and sku_name = #{reqParam.skuName}
+        </if>
+        <if test="reqParam.SN != null and reqParam.SN != ''">
+            and sn_code = #{reqParam.SN}
+        </if>
+        <if test="reqParam.attributeStr != null and reqParam.attributeStr != ''">
+            and attribute_str = #{reqParam.attributeStr}
+        </if>
+        <if test="reqParam.useName != null and reqParam.useName != ''">
+            and use_people like concat('%', #{reqParam.useName}, '%')
+        </if>
+        <if test="reqParam.useDepartment != null and reqParam.useDepartment != ''">
+            and use_department = #{reqParam.useDepartment}
+        </if>
+        order by update_time desc
+    </select>
+
+    <select id="getPageAssertsByBillIds" parameterType="com.ziroom.suzaku.main.param.AssertSelectReqParam" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_asserts where 1 = 1
+        <if test="reqParam.assertStatus != null">
+            and assets_state = #{reqParam.assertStatus}
+        </if>
+        <if test="reqParam.notInAssertsStateList != null and reqParam.notInAssertsStateList != '' and reqParam.notInAssertsStateList.size()>0">
+            AND assets_state NOT IN
+            <foreach item="item" index="index" collection="reqParam.notInAssertsStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.exceptExsit != null and reqParam.exceptExsit != '' and reqParam.exceptExsit.size()>0">
+            AND asserts_code NOT IN
+            <foreach item="item" index="index" collection="reqParam.exceptExsit" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.assertsStateList != null and reqParam.assertsStateList.size()>0">
+            AND assets_state IN
+            <foreach item="item" index="index" collection="reqParam.assertsStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.assertsCodes != null and reqParam.assertsCodes.size()>0">
+            AND asserts_code IN
+            <foreach item="item" index="index" collection="reqParam.assertsCodes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.skuIds != null and reqParam.skuIds.size()>0">
+            AND sku IN
+            <foreach item="item" index="index" collection="reqParam.skuIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="reqParam.importBills != null and reqParam.importBills.size > 0">
+            AND import_bill_num in <foreach collection="reqParam.importBills" item="importBillNum" index="index" open="(" close=")" separator=","> #{importBillNum} </foreach>
+        </if>
+        <if test="reqParam.category != null and reqParam.category !=''">
+            and category_id = #{reqParam.category}
+        </if>
+        <if test="reqParam.brandName != null and reqParam.brandName!=''">
+            and brand_name = #{reqParam.brandName}
+        </if>
+        <if test="reqParam.stationName != null and reqParam.stationName!=''">
+            and station_name = #{reqParam.stationName}
+        </if>
+        <if test="reqParam.supplierName != null and reqParam.supplierName!=''">
+            and supplier_name = #{reqParam.supplierName}
+        </if>
+        <if test="reqParam.assertsCode != null and reqParam.assertsCode != ''">
+            and asserts_code = #{reqParam.assertsCode}
+        </if>
+        <if test="reqParam.skuName != null and reqParam.skuName != ''">
+            and sku_name = #{reqParam.skuName}
+        </if>
+        <if test="reqParam.SN != null and reqParam.SN != ''">
+            and sn_code = #{reqParam.SN}
+        </if>
+        <if test="reqParam.attributeStr != null and reqParam.attributeStr != ''">
+            and attribute_str = #{reqParam.attributeStr}
+        </if>
+        <if test="reqParam.useName != null and reqParam.useName != ''">
+            and use_people like concat('%', #{reqParam.useName}, '%')
+        </if>
+        <if test="reqParam.useDepartment != null and reqParam.useDepartment != ''">
+            and use_department = #{reqParam.useDepartment}
+        </if>
+        order by update_time desc
+        <if test="reqParam.index != null">
+            limit #{reqParam.index}, #{reqParam.pageSize}
+        </if>
+    </select>
+
+    <update id="batchUpdate" parameterType="com.ziroom.suzaku.main.entity.SuzakuImportAsserts">
+        update suzaku_import_asserts
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="assets_state =case" suffix="end,">
+                <foreach collection="suzakuImportAsserts" item="item" index="index">
+                    <if test="item.assetsState !=null">
+                        when asserts_code= #{item.assertsCode} then #{item.assetsState}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="use_people =case" suffix="end,">
+                <foreach collection="suzakuImportAsserts" item="item" index="index">
+                    <if test="item.usePeople !=null and item.usePeople != ''">
+                        when asserts_code=#{item.assertsCode} then #{item.usePeople}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="use_department =case" suffix="end,">
+                <foreach collection="suzakuImportAsserts" item="item" index="index">
+                    <if test="item.useDepartment !=null and item.useDepartment != ''">
+                        when asserts_code=#{item.assertsCode} then #{item.useDepartment}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where asserts_code in
+        <foreach collection="suzakuImportAsserts" index="index" item="item" separator="," open="(" close=")">
+            #{item.assertsCode}
+        </foreach>
+    </update>
+
+    <sql id="where_sql">
+        <if test="qo.assertsCode != null and qo.assertsCode != ''">
+            and a.asserts_code = #{qo.assertsCode}
+        </if>
+        <if test="qo.oldAssertsCode != null and qo.oldAssertsCode != ''">
+            and a.old_asserts_code = #{qo.oldAssertsCode}
+        </if>
+        <if test="qo.assertsState != null and qo.assertsState != ''">
+            and a.assets_state = #{qo.assertsState}
+        </if>
+        <if test="qo.skuName != null and qo.skuName != ''">
+            and a.sku_name like concat('%', #{qo.skuName}, '%')
+        </if>
+        <if test="qo.userName != null and qo.userName != ''">
+            and a.use_people like concat('%', #{qo.userName}, '%')
+        </if>
+        <if test="qo.useDepartment != null and qo.useDepartment != ''">
+            and a.use_department = #{qo.useDepartment}
+        </if>
+        <if test="qo.attributeStr != null and qo.attributeStr != ''">
+            and a.attribute_str = #{qo.attributeStr}
+        </if>
+        <if test="qo.categoryId != null and qo.categoryId != ''">
+            and a.category_id = #{qo.categoryId}
+        </if>
+        <if test="qo.assertsStateList != null and qo.assertsStateList.size()>0">
+            AND a.assets_state IN
+            <foreach item="item" index="index" collection="qo.assertsStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qo.assertsCodes != null and qo.assertsCode.size()>0">
+            AND a.asserts_code IN
+            <foreach item="item" index="index" collection="qo.assertsCodes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qo.importBills != null and qo.importBills.size()>0">
+            AND a.import_bill_num IN
+            <foreach item="item" index="index" collection="qo.importBills" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by group_id, update_time desc
+    </sql>
+
+    <select id="selectAssertsList" resultMap="BaseResultMap">
+        SELECT a.*
+        from suzaku_import_asserts a
+        where 1=1
+        <include refid="where_sql"/>
+    </select>
+
+    <select id="totalAssert" resultType="int">
+        SELECT count(1)
+        from suzaku_import_asserts a
+        where 1=1
+        <include refid="where_sql"/>
+    </select>
+    <select id="selByCode" resultType="com.ziroom.suzaku.main.entity.SuzakuImportAsserts">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_asserts where
+         asserts_code = #{assertCode}
+    </select>
+
+</mapper>

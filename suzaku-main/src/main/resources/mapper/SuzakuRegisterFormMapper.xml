@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuRegisterFormMapper">
+
+    <sql id="Base_Column_List">
+        id, order_id, order_type, order_desc, status, return_date, user_name, user_no, deparment, operate_name, manager_type, station_no, station_name, create_name, moditiy_time
+    </sql>
+
+    <select id="totalApplyForm" parameterType="com.ziroom.suzaku.main.param.ApplyFormSelectReqParam" resultType="int">
+        SELECT count(1)
+        from suzaku_register_form where 1=1
+        <if test="useName != null and useName != ''">
+            and user_name = #{useName}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            and order_id = #{orderId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="orderType != null">
+            and order_type = #{orderType}
+        </if>
+        <if test="useDepartment != null and useDepartment!=''">
+            and deparment = #{useDepartment}
+        </if>
+    </select>
+
+    <select id="pageSkus" parameterType="com.ziroom.suzaku.main.param.ApplyFormSelectReqParam" resultType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormEntity">
+        SELECT <include refid="Base_Column_List"/>
+i       from suzaku_register_form where 1=1
+        <if test="useName != null and useName != ''">
+            and user_name = #{useName}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            and order_id = #{orderId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="orderType != null">
+            and order_type = #{orderType}
+        </if>
+        <if test="useDepartment != null and useDepartment!=''">
+            and deparment = #{useDepartment}
+        </if>
+        order by moditiy_time desc
+        <if test="index != null">
+            limit #{index}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="selAll" parameterType="com.ziroom.suzaku.main.param.ApplyFormSelectReqParam" resultType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormEntity">
+        SELECT <include refid="Base_Column_List"/>
+       from suzaku_register_form where 1=1
+        <if test="useName != null and useName != ''">
+            and user_name = #{useName}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            and order_id = #{orderId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="orderType != null">
+            and order_type = #{orderType}
+        </if>
+        <if test="useDepartment != null and useDepartment!=''">
+            and deparment = #{useDepartment}
+        </if>
+        order by moditiy_time desc
+    </select>
+    <select id="selOne" resultType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormEntity">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_register_form where order_id = #{orderId}
+    </select>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormEntity">
+	  insert into suzaku_register_form(order_id, order_type, order_desc, status, return_date, user_name, user_no, deparment,operate_name, manager_type, station_no, station_name)
+	  values (
+	  #{orderId},#{orderType},#{orderDesc},#{status},#{returnDate},#{userName},#{userNo},#{deparment},#{operateName},#{managerType},
+	  #{stationNo},#{stationName}
+	  )
+	</insert>
+
+</mapper>

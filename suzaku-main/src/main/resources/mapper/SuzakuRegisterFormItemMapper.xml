@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuRegisterFormItemMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuRegisterFormItemEntity">
+        <id column="id" property="id" />
+        <result column="apply_order_id" property="applyOrderId" />
+        <result column="asserts_code" property="assertsCode" />
+        <result column="old_asserts_code" property="oldAssertsCode" />
+        <result column="sku_id" property="skuId" />
+        <result column="sku_name" property="skuName" />
+        <result column="category_id" property="categoryId" />
+        <result column="category" property="category" />
+        <result column="brand_name" property="brandName" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="create_name" property="createName" />
+        <result column="moditiy_time" property="moditiyTime" />
+
+        <association property="registerFormEntity" column="apply_order_id" javaType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormEntity" select="com.ziroom.suzaku.main.dao.SuzakuRegisterFormMapper.selOne" > <!-- 用接口里定义的方法，根据skuEntity表中的sku_id字段查出对应数据     -->
+            <id column="apply_order_id" property="orderId" />
+        </association>
+    </resultMap>
+
+
+
+
+    <sql id="Base_Column_List">
+        id, apply_order_id, asserts_code, old_asserts_code, sku_id, sku_name, category_id, category, brand_name, supplier_name, create_name, moditiy_time
+    </sql>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormItemEntity">
+	  insert into suzaku_register_form_item(apply_order_id, asserts_code, old_asserts_code, sku_id, sku_name, category_id, category, brand_name, supplier_name)
+	  values
+        <foreach collection="suzakuRegisterFormItemEntityList" item="item" separator=",">
+          (
+            #{item.applyOrderId}, #{item.assertsCode},#{item.oldAssertsCode},#{item.skuId},#{item.skuName},#{item.categoryId},#{item.category},#{item.brandName},#{item.supplierName}
+          )
+        </foreach>
+	</insert>
+
+
+
+    <sql id="sel_piece">
+        <if test="orderList != null">
+            and apply_order_id in
+            <foreach collection="orderList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+
+        </if>
+        <if test="skuName != null and skuName != ''">
+            and sku_name = #{skuName}
+        </if>
+        <if test="categoryId != null and categoryId != ''">
+            and category_id = #{categoryId}
+        </if>
+        <if test="assertsCode != null and assertsCode !=''">
+            and asserts_code = #{assertsCode}
+        </if>
+        <if test="brandName != null and brandName != ''">
+            and brand_name = #{brandName}
+        </if>
+        <if test="supplierName != null and supplierName!=''">
+            and supplier_name = #{supplierName}
+        </if>
+    </sql>
+
+    <select id="total" parameterType="com.ziroom.suzaku.main.param.ApplyFormItemSelectReqParam" resultType="int">
+        SELECT count(1)
+        from suzaku_register_form_item where 1=1
+        <include refid="sel_piece"/>
+    </select>
+<!--    resultType="com.ziroom.suzaku.main.entity.SuzakuRegisterFormItemEntity"-->
+    <select id="getItemsBySelectParam" parameterType="com.ziroom.suzaku.main.param.ApplyFormItemSelectReqParam"  resultMap="BaseResultMap" >
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_register_form_item where 1=1
+        <include refid="sel_piece"/>
+        order by moditiy_time desc
+        <if test="index != null">
+            limit #{index}, #{pageSize}
+        </if>
+    </select>
+
+</mapper>

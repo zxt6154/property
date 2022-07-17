@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuSkuMapper" >
+
+    <sql id="Base_Column_List">
+        id, sku_id, sku_name, sku_desc, category_id, category_tree, category_name, brand_id, brand_name, supplier_id, supplier_name, sku_type, unit, period, threshold, attribute_desc, create_time, moditiy_time, operator_name
+    </sql>
+
+
+	<select id="getByNameFuzzy" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select <include refid="Base_Column_List"/>
+		from suzaku_sku where 1 = 1
+		<if test="skuName != null and skuName != ''">
+			<bind name="skuSearchName" value="'%' + skuName + '%'"/>
+			and sku_name like #{skuSearchName}
+		</if>
+	</select>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+	  insert into suzaku_sku(sku_id, sku_name, sku_desc, category_id, category_tree, category_name, brand_id, brand_name, supplier_id, supplier_name, sku_type, unit, period, threshold, attribute_desc,operator_name)
+	  values (
+	  #{skuEntity.skuId},#{skuEntity.skuName},#{skuEntity.skuDesc},#{skuEntity.categoryId},#{skuEntity.categoryTree},#{skuEntity.categoryName},#{skuEntity.brandId},#{skuEntity.brandName},#{skuEntity.supplierId},#{skuEntity.supplierName},
+	  #{skuEntity.skuType},#{skuEntity.unit},#{skuEntity.period},#{skuEntity.threshold},#{skuEntity.attributeDesc},#{skuEntity.operatorName}
+	  )
+	</insert>
+
+	<update id="update" parameterType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		update suzaku_sku
+		<set>
+<!--			<if test="skuName != null and skuName != ''">-->
+				sku_name = #{skuName},
+<!--			</if>-->
+<!--			<if test="skuDesc != null and skuDesc != ''">-->
+				sku_desc = #{skuDesc},
+
+				category_id = #{categoryId},
+
+				category_tree = #{categoryTree},
+<!--			</if>-->
+<!--			<if test="skuType != null and skuType != ''">-->
+				sku_type = #{skuType},
+<!--			</if>-->
+<!--			<if test="categoryName != null and categoryName != ''">-->
+				category_name = #{categoryName},
+<!--			</if>-->
+<!--			<if test="brandName != null and brandName != ''">-->
+				brand_name = #{brandName},
+<!--			</if>-->
+				brand_id = #{brandId},
+<!--			<if test="supplierName != null and supplierName != ''">-->
+				supplier_name = #{supplierName},
+<!--			</if>-->
+				supplier_id = #{supplierId},
+
+			<!--			<if test="unit != null and unit != ''">-->
+				unit = #{unit},
+<!--			</if>-->
+<!--			<if test="period != null and period != ''">-->
+				period = #{period},
+<!--			</if>-->
+<!--			<if test="threshold != null">-->
+				threshold = #{threshold},
+<!--			</if>-->
+<!--			<if test="attributeDesc != null and attributeDesc != ''">-->
+				attribute_desc = #{attributeDesc},
+<!--			</if>-->
+<!--			<if test="operatorName != null and operatorName != ''">-->
+				operator_name = #{operatorName},
+<!--			</if>-->
+		</set>
+		where sku_id = #{skuId}
+	</update>
+
+	<select id="getSuzakuSkuEntityBySkuId" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select <include refid="Base_Column_List"/>
+		from suzaku_sku where sku_id = #{skuId}
+	</select>
+
+	<select id="getByName" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select <include refid="Base_Column_List"/>
+		from suzaku_sku where sku_name = #{skuCreateReqParam.skuName}
+	</select>
+
+	<select id="getBySelectParam" parameterType="com.ziroom.suzaku.main.param.SkuSelectReqParam" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select <include refid="Base_Column_List"/>
+		from suzaku_sku where  1=1
+		<if test="skuName != null and skuName != ''">
+			and sku_name = #{skuName}
+		</if>
+		<if test="brandName != null and brandName != ''">
+			and brand_name = #{brandName}
+		</if>
+		<if test="supplierName != null and supplierName != ''">
+			and supplier_name = #{supplierName}
+		</if>
+		<if test="type != null and type != ''">
+			and sku_type = #{type}
+		</if>
+		<if test="attributeDesc != null and attributeDesc != ''">
+			and attribute_desc = #{attributeDesc}
+		</if>
+	</select>
+
+	<select id="getSkuInfoList" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		SELECT <include refid="Base_Column_List"/>
+		from suzaku_sku where 1=1
+		<if test="skus != null and skus.size()>0">
+			and sku_id in (
+			<foreach collection="skus" item="item" index="index" open="" close="" separator=",">
+				#{item}
+			</foreach>
+			)
+		</if>
+	</select>
+
+	<select id="pageSkus" parameterType="com.ziroom.suzaku.main.param.SkuSelectReqParam" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		SELECT <include refid="Base_Column_List"/>
+		from suzaku_sku where 1=1
+		<if test="skuId != null and skuId != ''">
+			and sku_id = #{skuId}
+		</if>
+		<if test="skuName != null and skuName != ''">
+			<bind name="searchSkuName" value="'%' + skuName + '%'"/>
+			and sku_name like #{searchSkuName}
+		</if>
+		<if test="brandName != null and brandName != ''">
+			<bind name="searchBrandName" value="'%' + brandName + '%'"/>
+			and brand_name like #{searchBrandName}
+		</if>
+		<if test="supplierName != null and supplierName != ''">
+			<bind name="searchSupplierName" value="'%' + supplierName + '%'"/>
+			and supplier_name like #{searchSupplierName}
+		</if>
+		<if test="categoryName != null and categoryName != ''">
+			<bind name="searchCategoryName" value="'%' + categoryName + '%'"/>
+			and category_name like #{searchCategoryName}
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			and category_id = #{categoryId}
+		</if>
+		order by moditiy_time desc
+		<if test="index != null">
+			limit #{index}, #{pageSize}
+		</if>
+	</select>
+
+	<select id="skusTotal" parameterType="com.ziroom.suzaku.main.param.SkuSelectReqParam" resultType="int">
+		SELECT count(1)
+		from suzaku_sku where 1=1
+		<if test="skuId != null and skuId != ''">
+			and sku_id = #{skuId}
+		</if>
+		<if test="skuName != null and skuName != ''">
+			<bind name="searchSkuName" value="'%' + skuName + '%'"/>
+			and sku_name like #{searchSkuName}
+		</if>
+		<if test="brandName != null and brandName != ''">
+			and brand_name = #{brandName}
+		</if>
+		<if test="supplierName != null and supplierName != ''">
+			and supplier_name = #{supplierName}
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			and category_id = #{categoryId}
+		</if>
+		<if test="categoryName != null and categoryName != ''">
+			and category_name = #{categoryName}
+		</if>
+	</select>
+
+	<select id="selectSkuByCategoryId" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select * from suzaku_sku where 1=1
+		<if test="categoryId != null and categoryId != ''">
+			and category_id = #{categoryId}
+		</if>
+		LIMIT 1
+	</select>
+	<!-- 批量查询 -->
+    <select id="batchSelect" resultType="com.ziroom.suzaku.main.entity.SuzakuSkuEntity">
+		select <include refid="Base_Column_List"/>
+		from suzaku_sku
+		where 1=1
+		<if test="skuIds != null and skuIds.size > 0">
+			AND sku_id in <foreach collection="skuIds" item="skuId" index="index" open="(" close=")" separator=","> #{skuId,jdbcType=VARCHAR} </foreach>
+		</if>
+	</select>
+
+
+</mapper>

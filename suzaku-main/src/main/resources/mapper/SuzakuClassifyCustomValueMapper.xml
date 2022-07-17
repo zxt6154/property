@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuClassifyCustomValueMapper" >
+
+    <sql id="Base_Column_List">
+        id, custom_id, custom_value, skus
+    </sql>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+	  insert into suzaku_classify_custom_value(custom_id, custom_value, skus)
+	  values (#{custom.customId},#{custom.customValue},#{custom.skus})
+	</insert>
+
+    <insert id="batchInsert" parameterType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+	  insert into suzaku_classify_custom_value(custom_id, custom_value, skus)
+	  values
+        <foreach collection="customs" item="item" separator=",">
+            (#{item.customId},#{item.customValue},#{item.skus})
+        </foreach>
+	</insert>
+
+    <update id="batchUpdate" parameterType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+        update suzaku_classify_custom_value
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="skus =case" suffix="end,">
+                <foreach collection="customs" item="item" index="index">
+                    <if test="item.skus !=null and item.skus != ''">
+                        when id=#{item.id} then #{item.skus}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="customs" index="index" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+
+    <delete id="delBatch" parameterType="java.lang.Long">
+        delete from suzaku_classify_custom_value
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getClassifyCustom" resultType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_classify_custom_value where 1=1
+        <if test="customIds != null and customIds.size() > 0">
+            and custom_id in
+            <foreach collection="customIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="skuId != null and skuId != ''">
+            <bind name="skuIdSearch" value="'%' + skuId + '%'"/>
+            and skus like #{skuIdSearch}
+        </if>
+    </select>
+
+
+    <select id="selByskuId" resultType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_classify_custom_value where 1=1
+
+        <if test="skuId != null and skuId != ''">
+            <bind name="skuIdSearch" value="'%' + skuId + '%'"/>
+                and skus like #{skuIdSearch}
+        </if>
+    </select>
+
+    <select id="ifChange" resultType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_classify_custom_value where 1=1
+        <if test="customId != null ">
+            and custom_id = #{customId}
+        </if>
+        <if test="entity.customValue != null ">
+            and custom_value = #{customName}
+        </if>
+        <if test="skuId != null ">
+            <bind name="skuIdSearch" value="'%' + skuId + '%'"/>
+            and skus like #{skuIdSearch}
+        </if>
+    </select>
+
+    <update id="tagSku" parameterType="com.ziroom.suzaku.main.entity.SuzakuClassifyCustomValueEntity">
+        update suzaku_classify_custom_value
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="skus =case" suffix="end,">
+                <foreach collection="skuList" item="item" index="index">
+                    <if test="item.skus !=null and item.skus != ''">
+                        when id=#{item.id} then #{item.skus}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="skuList" index="index" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+    <update id="update">
+        update suzaku_classify_custom_value
+        <set>
+<!--            			<if test="skuName != null and skuName != ''">-->
+            custom_id = #{customs.customId},
+<!--            			</if>-->
+<!--            			<if test="skuDesc != null and skuDesc != ''">-->
+            custom_value = #{customs.customValue},
+<!--            			</if>-->
+<!--            			<if test="skuType != null and skuType != ''">-->
+            skus = #{customs.skus},
+<!--                        </if>-->
+        </set>
+        where id = #{customs.id}
+    </update>
+
+</mapper>

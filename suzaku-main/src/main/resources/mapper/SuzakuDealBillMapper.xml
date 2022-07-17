@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuDealBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuDealBill">
+        <id column="id" property="id" />
+        <result column="deal_num" property="dealNum" />
+        <result column="deal_state" property="dealState" />
+        <result column="deal_type" property="dealType" />
+        <result column="sum_price" property="sumPrice" />
+        <result column="deal_count" property="dealCount" />
+        <result column="deal_cost" property="dealCost" />
+        <result column="sell_off" property="sellOff" />
+        <result column="manage_type" property="manageType" />
+        <result column="station_id" property="stationId" />
+        <result column="deal_note" property="dealNote" />
+
+        <result column="creator" property="creator" />
+        <result column="creator_dept" property="creatorDept" />
+        <result column="create_time" property="checkTime" />
+
+        <result column="operator" property="operator" />
+        <result column="operator_dept" property="operatorDept" />
+        <result column="operator_time" property="operatorTime" />
+
+        <result column="check_people" property="creator" />
+        <result column="check_dept" property="operatorDept" />
+        <result column="check_time" property="checkTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, deal_num, deal_state, deal_type, sum_price, deal_count, deal_cost, sell_off, manage_type, deal_note, creator, creator_dept, create_time, operator, operator_dept, operator_time, check_people, check_dept, check_time
+    </sql>
+
+    <sql id="page_query_piece">
+
+        <if test="dealNums != null and dealNums.size()>0">
+            AND deal_num IN
+            <foreach item="item" index="index" collection="dealNums" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dealType != null and dealType != ''">
+            and deal_type = #{dealType}
+        </if>
+        <if test="dealNote != null and dealNote != ''">
+            <bind name="dealNoteSearch" value="'%' + dealNote + '%'"/>
+             and deal_note like #{dealNoteSearch}
+        </if>
+        <if test="creator != null and creator != ''">
+            <bind name="creatorSearch" value="'%' + creator + '%'"/>
+             and creator like #{creatorSearch}
+        </if>
+        <if test="manageType != null and manageType != ''">
+            and manage_type = #{manageType}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            and create_time = #{createTime}
+        </if>
+    </sql>
+
+    <insert id="add" parameterType="com.ziroom.suzaku.main.entity.SuzakuDealBill">
+        insert into suzaku_deal_bill(deal_num, deal_state, deal_type, sum_price, deal_count, deal_cost, sell_off, manage_type, station_id, deal_note, creator, creator_dept, create_time, operator, operator_dept, operator_time, check_people, check_dept, check_time)
+        values (#{dealNum}, #{dealState}, #{dealType}, #{sumPrice}, #{dealCount}, #{dealCost}, #{sellOff}, #{manageType}, #{stationId}, #{dealNote}, #{creator}, #{creatorDept}, #{createTime}, #{operator}, #{operatorDept}, #{operatorTime}, #{checkPeople}, #{checkDept}, #{checkTime})
+    </insert>
+
+    <update id="update" parameterType="com.ziroom.suzaku.main.entity.SuzakuDealBill">
+        update suzaku_deal_bill
+        <set>
+            <if test="dealNum != null and dealNum != ''">
+                deal_num = #{dealNum},
+            </if>
+            <if test="dealState != null and dealState != '' and dealState != 0">
+                deal_state = #{dealState},
+            </if>
+            <if test="dealNote != null and dealNote != ''">
+                deal_note = #{dealNote},
+            </if>
+            <if test="sumPrice != null and sumPrice != ''">
+                sum_price = #{sumPrice},
+            </if>
+            <if test="dealCount != null and dealCount != ''">
+                deal_count = #{dealCount},
+            </if>
+            <if test="dealCost != null and dealCost != ''">
+                deal_cost = #{dealCost},
+            </if>
+            <if test="sellOff != null and sellOff != ''">
+                sell_off = #{sellOff},
+            </if>
+            <if test="manageType != null and manageType != '' and manageType != 0">
+                manage_type = #{manageType},
+            </if>
+            <if test="stationId != null and stationId != ''">
+                station_id = #{stationId},
+            </if>
+<!--            <if test="dealNote != null and dealNote != ''">-->
+<!--                deal_note = #{dealNote},-->
+<!--            </if>-->
+            <if test="creator != null and creator != ''">
+                creator = #{creator},
+            </if>
+            <if test="creatorDept != null and creatorDept != ''">
+                creator_dept = #{creatorDept},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="operator != null and operator != ''">
+                operator = #{operator},
+            </if>
+            <if test="operatorDept != null and operatorDept != ''">
+                operator_dept = #{operatorDept},
+            </if>
+            <if test="operatorTime != null">
+                operator_time = #{operatorTime},
+            </if>
+
+            <if test="checkPeople != null and checkPeople != ''">
+                check_people = #{checkPeople},
+            </if>
+            <if test="checkDept != null and checkDept != ''">
+                check_dept = #{checkDept},
+            </if>
+            <if test="checkTime != null">
+                check_time = #{checkTime},
+            </if>
+
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 查询数量 -->
+    <select id="total" resultType="long">
+        SELECT count(1)
+        FROM suzaku_deal_bill WHERE 1 = 1
+        <include refid="page_query_piece"/>
+    </select>
+
+    <!-- 查询数据 -->
+    <select id="pageDealBillsList" resultType="com.ziroom.suzaku.main.entity.SuzakuDealBill">
+        SELECT <include refid="Base_Column_List"/>
+        FROM suzaku_deal_bill WHERE 1 = 1
+        <include refid="page_query_piece"/>
+        order by create_time desc
+        <if test="index != null">
+            limit #{index}, #{pageSize}
+        </if>
+    </select>
+
+</mapper>

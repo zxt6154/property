@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuManageTypeMapper">
+
+    <sql id="Base_Column_List">
+        id, name, create_time, moditiy_time,type_code
+    </sql>
+
+    <select id="getManagerType" resultType="com.ziroom.suzaku.main.entity.SuzakuManageType">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_manage_type
+    </select>
+
+</mapper>

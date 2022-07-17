@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuCheckItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuCheckItem">
+        <id column="id" property="id" />
+        <result column="check_id" property="checkId" />
+        <result column="assert_code" property="assertCode" />
+        <result column="sku_name" property="skuName" />
+        <result column="staff_status" property="staffStatus" />
+        <result column="admin_status" property="adminStatus" />
+        <result column="use_people" property="usePeople" />
+        <result column="check_department" property="checkDepartment" />
+        <result column="error_type" property="errorType" />
+        <result column="error_info" property="errorInfo" />
+        <result column="upload_code" property="uploadCode" />
+        <result column="pic_url" property="picUrl" />
+        <result column="scan_result" property="scanResult" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, check_id, assert_code, sku_name,staff_status, admin_status, use_people, check_department, error_type,error_info,upload_code, pic_url,scan_result, create_user, update_user, create_time, update_time
+    </sql>
+
+    <resultMap type="com.ziroom.suzaku.main.model.po.SuzakuCheckItemPo" id="checkItemPo">
+        <result property="id" column="id"/>
+    </resultMap>
+
+
+    <select id="selectCheckItemPage" resultMap="checkItemPo">
+        SELECT r.*
+        from suzaku_check_item r
+        where 1=1
+        <if test="qo.checkId != null and qo.checkId != ''">
+            and r.check_id = #{qo.checkId}
+        </if>
+        <if test="qo.assertCode != null and qo.assertCode != ''">
+            and r.assert_code = #{qo.assertCode}
+        </if>
+        <if test="qo.skuName != null and qo.skuName != ''">
+            and r.sku_name like concat('%', #{qo.skuName}, '%')
+        </if>
+        <if test="qo.userName != null and qo.userName != ''">
+            and r.use_people like concat('%', #{qo.userName}, '%')
+        </if>
+        <if test="qo.staffStatus != null">
+            and r.staff_status = #{qo.staffStatus}
+        </if>
+        <if test="qo.adminStatus != null">
+            and r.admin_status = #{qo.adminStatus}
+        </if>
+        order by r.update_time desc
+    </select>
+
+</mapper>

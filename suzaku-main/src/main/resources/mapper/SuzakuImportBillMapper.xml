@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuImportBillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        <id column="id" property="id" />
+        <result column="import_bill_num" property="importBillNum" />
+        <result column="import_state" property="importState" />
+        <result column="import_way" property="importWay" />
+        <result column="manager_type" property="managerType" />
+        <result column="supplier" property="supplier" />
+        <result column="oa_apply_num" property="oaApplyNum" />
+        <result column="import_count" property="importCount" />
+        <result column="import_sum" property="importSum" />
+        <result column="repository" property="repository" />
+        <result column="import_date" property="importDate" />
+        <result column="import_note" property="importNote" />
+        <result column="create_dept" property="createDept" />
+        <result column="creator" property="creator" />
+        <result column="create_date" property="createDate" />
+        <result column="modifietor" property="modifietor" />
+        <result column="modifie_date" property="modifieDate" />
+        <result column="import_company" property="importCompany" />
+        <result column="apply_state" property="applyState" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, import_bill_num, import_state, import_way, manager_type, supplier, oa_apply_num, import_count, import_sum, repository, import_date, import_note, create_dept, creator, create_date, modifietor, modifie_date, import_company, apply_state
+    </sql>
+
+    <sql id="query_sql">
+        <if test="importState != null and importState != '' and importState !='0'">
+            and import_state = #{importState}
+        </if>
+        <if test="brand != null and brand != '' and brand !=0">
+            and sku_name = #{skuName}
+        </if>
+        <if test="importBillNum != null and importBillNum != ''">
+            and import_bill_num = #{importBillNum}
+        </if>
+        <if test="supplier != null and supplier != '' and supplier !='0'">
+            and supplier = #{supplier}
+        </if>
+        <if test="managerType != null and managerType != '' and managerType !='0'">
+            and manager_type = #{managerType}
+        </if>
+    </sql>
+
+
+    <select id="selectByCondition" parameterType="com.ziroom.suzaku.main.model.dto.req.AssertImportReq" resultType="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_bill where 1=1
+        <include refid="query_sql"/>
+        order by create_date desc
+        <if test="index != null">
+            limit #{index}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="selectAll" parameterType="com.ziroom.suzaku.main.model.dto.req.AssertImportReq" resultType="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_bill where 1=1
+        <include refid="query_sql"/>
+    </select>
+
+    <select id="selectTotal" parameterType="com.ziroom.suzaku.main.model.dto.req.AssertImportReq" resultType="int">
+        SELECT count(1)
+        from suzaku_import_bill
+        where 1=1
+        <include refid="query_sql"/>
+    </select>
+
+    <select id="getListByType" resultType="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_bill where import_state =2
+        <if test="type != null">
+            and manager_type = #{type}
+        </if>
+    </select>
+
+    <select id="getListByTypeAndR" resultType="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_bill where import_state =2
+        <if test="type != null and type != ''">
+            and manager_type = #{type}
+        </if>
+        <if test="remandDepot != null and remandDepot != ''">
+            and repository = #{remandDepot}
+        </if>
+    </select>
+
+    <select id="getByNum" resultType="com.ziroom.suzaku.main.entity.SuzakuImportBill">
+        SELECT <include refid="Base_Column_List"/>
+        from suzaku_import_bill where import_state =2
+        <if test="num != null">
+            and import_bill_num = #{num}
+        </if>
+    </select>
+
+</mapper>

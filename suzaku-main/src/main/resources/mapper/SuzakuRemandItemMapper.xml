@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuRemandItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuRemandItem">
+        <id column="id" property="id" />
+        <result column="remand_id" property="remandId" />
+        <result column="sku_id" property="skuId" />
+        <result column="assert_code" property="assertCode" />
+        <result column="old_assert_code" property="oldAssertCode" />
+        <result column="sku_name" property="skuName" />
+        <result column="use_people" property="usePeople" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, remand_id, sku_id, assert_code, old_assert_code,sku_name, use_people,create_time, update_time
+    </sql>
+
+</mapper>

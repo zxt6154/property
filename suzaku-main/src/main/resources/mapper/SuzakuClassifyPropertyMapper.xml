@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuClassifyPropertyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuClassifyProperty">
+        <id column="id" property="id" />
+        <result column="classify_name" property="classifyName" />
+        <result column="senior_id" property="seniorId" />
+        <result column="classify_unit" property="classifyUnit" />
+        <result column="classify_deadline" property="classifyDeadline" />
+        <result column="operator_code" property="operatorCode" />
+        <result column="operator_name" property="operatorName" />
+        <result column="tree_code" property="treeCode" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="code_path" property="codePath" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, classify_name, senior_id, classify_unit, classify_deadline, operator_code, operator_name, tree_code, delete_flag, code_path,create_time, update_time
+    </sql>
+
+
+    <select id="getClassifyPropertyAndChildren" resultMap="BaseResultMap">
+        SELECT
+            b.*
+        FROM
+            suzaku_classify_property a,
+            suzaku_classify_property b
+        WHERE
+            a.id  = #{classifyId}
+            AND b.tree_code LIKE concat(
+            a.tree_code,'%')
+        order by b.create_time asc
+    </select>
+
+    <select id="selectRootMax" resultType="java.lang.String">
+        SELECT
+            MAX( classify_code )
+        FROM
+            suzaku_classify_property
+        WHERE
+            senior_id IS NULL
+    </select>
+
+    <select id="selectChildrenMax" resultType="java.lang.String">
+        SELECT
+            MAX( classify_code )
+        FROM
+            suzaku_classify_property
+        WHERE
+            senior_id = #{seniorId}
+    </select>
+
+    <select id="getClassifyInfos" resultType="com.ziroom.suzaku.main.entity.SuzakuClassifyProperty">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        suzaku_classify_property
+        where id in
+        <foreach collection="classifyIds" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectAllData" resultMap="BaseResultMap">
+        SELECT
+            s.*
+        FROM
+            suzaku_classify_property s
+        ORDER BY
+            s.create_time ASC
+    </select>
+
+    <select id="getClassInfoById" resultType="com.ziroom.suzaku.main.entity.SuzakuClassifyProperty">
+        SELECT <include refid="Base_Column_List"/>
+        FROM
+            suzaku_classify_property
+        WHERE id = #{classifyId}
+    </select>
+
+</mapper>

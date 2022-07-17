@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuSupplierMapper" >
+
+    <sql id="Base_Column_List">
+        id, supplier_code, supplier_name, source, cat_id
+    </sql>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuSupplierEntity">
+        insert into suzaku_supplier(supplier_code, supplier_name, source)
+        values
+        <foreach collection="supplierList" item="item" separator=",">
+            (
+            #{item.supplierCode}, #{item.supplierName},#{item.source}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getSuppliersByCat" resultType="com.ziroom.suzaku.main.entity.SuzakuSupplierEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_supplier where 1=1
+        <if test="category != null and category!='' and category!= 'null'">
+            and cat_id = #{category}
+        </if>
+    </select>
+
+
+    <!-- 模糊查询 -->
+    <select id="fuzzySearch" resultType="com.ziroom.suzaku.main.entity.SuzakuSupplierEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_supplier where 1=1
+        <if test="supplierName != null and supplierName != ''">
+            <bind name="supplierName" value="'%' + supplierName + '%'"/> and supplier_name like #{supplierName}
+        </if>
+    </select>
+
+</mapper>

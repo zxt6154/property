@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuRemandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuRemand">
+        <id column="id" property="id" />
+        <result column="remand_id" property="remandId" />
+        <result column="remand_state" property="remandState" />
+        <result column="remand_admin" property="remandAdmin" />
+        <result column="remand_type" property="remandType" />
+        <result column="remand_remark" property="remandRemark" />
+        <result column="remand_date" property="remandDate" />
+        <result column="remand_depot" property="remandDepot" />
+        <result column="remand_store_code" property="remandStoreCode" />
+        <result column="remand_store_name" property="remandStoreName" />
+        <result column="operate_name" property="operateName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap type="com.ziroom.suzaku.main.model.po.SuzakuRemandPo" id="remandPo">
+        <result property="id" column="id"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, remand_id,remand_state, remand_admin, remand_type, remand_remark, remand_date, remand_depot, remand_store_code, remand_store_name, operate_name,create_time, update_time
+    </sql>
+
+    <select id="selectRemandPage" resultMap="remandPo">
+        SELECT r.*,i.assert_code,i.sku_name,i.use_people,i.old_assert_code
+        from suzaku_remand r
+        join suzaku_remand_item i on r.remand_id = i.remand_id
+        where 1=1
+        <if test="qo.remandState != null and qo.remandState != ''">
+            and r.remand_state = #{qo.remandState}
+        </if>
+        <if test="qo.remandId != null and qo.remandId != ''">
+            and r.remand_id = #{qo.remandId}
+        </if>
+        <if test="qo.assertsCode != null and qo.assertsCode != ''">
+            and i.assert_code = #{qo.assertsCode}
+        </if>
+        <if test="qo.oldAssertsCode != null and qo.oldAssertsCode != ''">
+            and i.old_assert_code = #{qo.oldAssertsCode}
+        </if>
+        <if test="qo.skuName != null and qo.skuName != ''">
+            and i.sku_name like concat('%', #{qo.skuName}, '%')
+        </if>
+        order by r.update_time desc
+    </select>
+
+</mapper>

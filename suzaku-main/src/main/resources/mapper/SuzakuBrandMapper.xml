@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuBrandMapper" >
+
+    <sql id="Base_Column_List">
+        id, brand_code,brand_name,source, cat_id
+    </sql>
+
+    <insert id="insert" parameterType="com.ziroom.suzaku.main.entity.SuzakuBrandEntity">
+	  insert into suzaku_brand(brand_code, brand_name, source)
+	  values
+        <foreach collection="brandList" item="item" separator=",">
+            (
+            #{item.brandCode}, #{item.brandName},#{item.source}
+            )
+        </foreach>
+	</insert>
+
+
+    <select id="getBrandsByCat" resultType="com.ziroom.suzaku.main.entity.SuzakuBrandEntity">
+        select <include refid="Base_Column_List"/>
+        from suzaku_brand where 1=1
+        <if test="category != null and category!='' and category!= 'null'">
+            and cat_id = #{category}
+        </if>
+	</select>
+
+</mapper>

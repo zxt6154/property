@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuCompanyMappingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuCompanyMapping">
+        <result column="company_code" property="companyCode" />
+        <result column="company_name" property="companyName" />
+        <result column="company_city" property="companyCity" />
+        <result column="city_code" property="cityCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        company_code, company_name, company_city, city_code
+    </sql>
+
+    <!-- 模糊查询 -->
+    <select id="fuzzySearch" resultType="com.ziroom.suzaku.main.entity.SuzakuCompanyMapping">
+        select <include refid="Base_Column_List"/>
+        from suzaku_company_mapping where 1=1
+        <if test="companyMappingReq.companyCode!= null and companyMappingReq.companyCode !='' and companyMappingReq.companyCode != 'null'">
+            <bind name="companyMappingReq.companyCode" value="'%' + companyMappingReq.companyCode + '%'"/> and company_code like #{companyMappingReq.companyCode}
+        </if>
+        <if test="companyMappingReq.companyName!= null and companyMappingReq.companyName !='' and companyMappingReq.companyName != 'null'">
+            <bind name="companyMappingReq.companyName" value="'%' + companyMappingReq.companyName + '%'"/> and company_name like #{companyMappingReq.companyName}
+        </if>
+        <if test="companyMappingReq.companyCity!= null and companyMappingReq.companyCity !='' and companyMappingReq.companyCity != 'null'">
+            <bind name="companyMappingReq.companyCity" value="'%' + companyMappingReq.companyCity + '%'"/> and company_city like #{companyMappingReq.companyCity}
+        </if>
+        <if test="companyMappingReq.cityCode!= null and companyMappingReq.cityCode !='' and companyMappingReq.cityCode != 'null'">
+            <bind name="companyMappingReq.cityCode" value="'%' + companyMappingReq.cityCode + '%'"/> and city_code like #{companyMappingReq.cityCode}
+        </if>
+
+    </select>
+
+</mapper>

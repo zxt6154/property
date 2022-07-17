@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ziroom.suzaku.main.dao.SuzakuDealHistoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ziroom.suzaku.main.entity.SuzakuDealHistory">
+        <id column="id" property="id" />
+        <result column="deal_num" property="dealNum" />
+        <result column="assert_code" property="assertCode" />
+        <result column="sku_id" property="skuId" />
+        <result column="old_asserts_code" property="oldAssertsCode" />
+        <result column="deal_state" property="dealState" />
+        <result column="category_id" property="categoryId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, deal_num, assert_code, sku_id, old_asserts_code, deal_state
+    </sql>
+
+    <sql id="page_query_piece">
+        <if test="dealNum != null ">
+            and deal_num = #{dealNum}
+        </if>
+        <if test="assertCode != null ">
+            and assert_code = #{assertCode}
+        </if>
+        <if test="skuId != null ">
+            and sku_id = #{skuId}
+        </if>
+        <if test="assertsState != null ">
+            and deal_state = #{dealState}
+        </if>
+        <if test="categoryId != null ">
+            and category_id = #{categoryId}
+        </if>
+    </sql>
+
+    <insert id="saveBatch" parameterType="java.util.List">
+        insert into suzaku_deal_history(deal_num, assert_code, sku_id, old_asserts_code, deal_state)
+        values
+        <foreach collection="dealHistories" item="item" index="index" separator=",">
+           ( #{dealNum}, #{assertCode}, #{skuId}, #{oldAssertsCode}, #{dealState})
+        </foreach>
+    </insert>
+
+    <select id="selHis" resultType="com.ziroom.suzaku.main.entity.SuzakuDealHistory">
+        select <include refid="Base_Column_List" />
+        from suzaku_deal_history
+        where 1 = 1
+        <include refid="page_query_piece" />
+    </select>
+
+    <select id="selHisPage" resultType="com.ziroom.suzaku.main.entity.SuzakuDealHistory">
+        select <include refid="Base_Column_List" />
+        from suzaku_deal_history
+        where 1 = 1
+        <include refid="page_query_piece" />
+        <if test="index != null">
+            limit #{index}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="selHisTotal" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM suzaku_deal_history
+        where 1=1
+        <include refid="page_query_piece"/>
+    </select>
+
+
+</mapper>
